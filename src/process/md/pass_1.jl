@@ -42,8 +42,19 @@ function process_md_file_pass_1(
     # NOTE: we don't use `filehash` here because we need the actual content of
     # NOTE: the page anyway, so we compute the hash after retrieving the content
     page_content_md = read(fpath, String)
-    page_hash       = hash(page_content_md)
-    lc.page_hash[]  = page_hash
+
+    for pp in _get_preprocessors(splitext(fpath)[2])
+        result = Base.invokelatest(pp, page_content_md, lc.rpath)
+        if isnothing(result)
+            lc.page_hash[] = hash(page_content_md)
+            restore_page_context!(lc, bk_state)
+            return true
+        end
+        page_content_md = result
+    end
+
+    page_hash      = hash(page_content_md)
+    lc.page_hash[] = page_hash
 
     opath = get_opath(lc.glob, fpath)
     set_meta_parameters(lc, fpath, opath)

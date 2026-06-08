@@ -44,6 +44,7 @@ normalize_uri(s) = URIs.escapeuri(s, issafe)
 # Main functions
 export serve, build, html, html2, latex
 export attach, cur_gc, cur_lc
+export register_preprocessor!
 
 export toy_example
 export notebook
@@ -78,6 +79,7 @@ const FRANKLIN_ENV = Dict{Symbol, Any}(
     :output_cache_folder => "__cache",
     # see logging.jl
     :log_times           => false,
+    :preprocessors       => Pair{Tuple{Symbol,Vector{String}}, Any}[],
 )
 env(s::Symbol)        = FRANKLIN_ENV[s]
 setenv!(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)
@@ -186,6 +188,7 @@ include(p/"md/process.jl")
 
 
 p = "build"
+include(p/"preprocessor.jl")
 include(p/"paths.jl")
 include(p/"watch.jl")
 include(p/"full_pass.jl")
