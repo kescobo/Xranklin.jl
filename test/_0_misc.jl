@@ -137,3 +137,7 @@ end
     @test X.stripped_repr('a') == "'a'"
     @test X.stripped_repr("a\nb\nc\n") == "a b c"
 end
+
+@testset "preprocessor" begin
+    include("build/preprocessor.jl")
+end
